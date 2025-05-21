@@ -1,13 +1,16 @@
 import express from 'express';
 import {Register, Login, Reset_password, Update_user, Delete_user} from '../controllers/user.js';
+import {protect}  from  "../middlweres/auth.js"
+import {valdate}  from  "../middlweres/valdation.js"
+import {registerSchema} from '../Utlites/validationScehma.js'
 
 const router = express.Router();
 
-router.patch('/', Update_user);
-router.delete('/', Delete_user);
-router.post('/Register',Register);
-router.post('/login', Login);   
-router.post('/reset_password', Reset_password);
+router.patch('/', protect,Update_user);
+router.delete('/',protect, Delete_user);  
+router.post('/reset_password',protect,Reset_password);
+router.post('/Register',valdate(registerSchema),Register);
+router.post('/login', Login); 
 
 
 

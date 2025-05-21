@@ -1,4 +1,5 @@
 import mongoose  from "mongoose";
+import Product from "./product.js";
 
 const orderSchema = new mongoose.Schema({
   userId: {
@@ -24,6 +25,16 @@ const orderSchema = new mongoose.Schema({
     default: 'CashOnDelivery'
   }
 },{ timestamps: true });
+
+orderSchema.pre('save', async function(next) {
+  for (const item of this.products) {
+    const exists = await Product.exists({ _id: item.productId });
+    if (!exists) {
+      return next(new Error(`Product with ID ${item.productId} does not exist.`));
+    }
+  }
+  next();
+});
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;
